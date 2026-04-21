@@ -5,8 +5,9 @@ from config import MODEL_PATH, VEHICLE_CLASSES, CONF_THRESHOLD, IMGSZ
 
 
 class VehicleDetector:
-    def __init__(self):
+    def __init__(self, conf: float = CONF_THRESHOLD):
         self.model = YOLO(str(MODEL_PATH))
+        self.conf  = conf
 
     def detect(self, frame: np.ndarray) -> tuple[list, float]:
         """Return (boxes, density_pct).
@@ -16,7 +17,7 @@ class VehicleDetector:
         h, w = frame.shape[:2]
         frame_area = h * w
 
-        results = self.model(frame, imgsz=IMGSZ, conf=CONF_THRESHOLD, verbose=False)[0]
+        results = self.model(frame, imgsz=IMGSZ, conf=self.conf, verbose=False)[0]
 
         boxes = []
         vehicle_area = 0
@@ -29,5 +30,5 @@ class VehicleDetector:
                 boxes.append([x1, y1, x2, y2])
                 vehicle_area += (x2 - x1) * (y2 - y1)
 
-        density = (vehicle_area / frame_area) * 100.0
+        density = min((vehicle_area / frame_area) * 100.0, 100.0)
         return boxes, density

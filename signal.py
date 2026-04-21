@@ -10,21 +10,26 @@ _COLORS = {
 
 
 class TrafficSignal:
-    def __init__(self):
-        self._history: deque[float] = deque(maxlen=SMOOTH_WINDOW)
+    def __init__(self, window: int = SMOOTH_WINDOW):
+        self._history: deque[float] = deque(maxlen=window)
+        self._state = "GREEN"
 
     def update(self, density: float) -> tuple[str, tuple[int, int, int]]:
         self._history.append(density)
-        avg = sum(self._history) / len(self._history)
+        avg = self.smoothed
 
         if avg < GREEN_THRESHOLD:
-            state = "GREEN"
+            self._state = "GREEN"
         elif avg < YELLOW_THRESHOLD:
-            state = "YELLOW"
+            self._state = "YELLOW"
         else:
-            state = "RED"
+            self._state = "RED"
 
-        return state, _COLORS[state]
+        return self._state, _COLORS[self._state]
+
+    @property
+    def state(self) -> str:
+        return self._state
 
     @property
     def smoothed(self) -> float:

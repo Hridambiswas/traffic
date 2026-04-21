@@ -46,6 +46,7 @@ def run(source: str | None = None, conf: float | None = None,
 
     cap.release()
     cv2.destroyAllWindows()
+    print(f"[main] session ended — signal was {signal.state} at exit")
 
 
 if __name__ == "__main__":

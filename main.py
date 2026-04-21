@@ -9,14 +9,15 @@ from signal import TrafficSignal
 from stream import pick_source
 
 
-def run(source: str | None = None, conf: float | None = None):
+def run(source: str | None = None, conf: float | None = None,
+        smooth_window: int = 8, stream_height: int = 480):
     stream_url = pick_source() if source is None else source
     cap = cv2.VideoCapture(stream_url)
     if not cap.isOpened():
         raise RuntimeError(f"Cannot open stream: {stream_url}")
 
     detector = VehicleDetector(conf=conf) if conf else VehicleDetector()
-    signal   = TrafficSignal()
+    signal   = TrafficSignal(window=smooth_window)
 
     t_prev = time.perf_counter()
     print("Press Q to quit.")
@@ -53,5 +54,10 @@ if __name__ == "__main__":
                         help="Direct stream URL or YouTube live URL (default: random from config)")
     parser.add_argument("--conf",   type=float, default=None,
                         help="YOLO confidence threshold override (default: config.CONF_THRESHOLD)")
+    parser.add_argument("--window", type=int,   default=8,
+                        help="Smoothing window size in frames (default: 8)")
+    parser.add_argument("--height", type=int,   default=480,
+                        help="Preferred stream height (default: 480)")
     args = parser.parse_args()
-    run(source=args.source, conf=args.conf)
+    run(source=args.source, conf=args.conf,
+        smooth_window=args.window, stream_height=args.height)

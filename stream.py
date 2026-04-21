@@ -1,15 +1,14 @@
 import random
-import subprocess
 import yt_dlp
 
 from config import CAMERA_SOURCES
 
 
-def get_stream_url(youtube_url: str) -> str:
+def get_stream_url(youtube_url: str, prefer_height: int = 480) -> str:
     ydl_opts = {
         "quiet": True,
         "no_warnings": True,
-        "format": "best[height<=480]/best",
+        "format": f"best[height<={prefer_height}]/best",
     }
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(youtube_url, download=False)

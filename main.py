@@ -3,7 +3,6 @@ import time
 
 import cv2
 
-from config import CAMERA_SOURCES
 from detector import VehicleDetector
 from display import draw
 from signal import TrafficSignal
@@ -11,16 +10,12 @@ from stream import pick_source
 
 
 def run(source: str | None = None, conf: float | None = None):
-    if conf is not None:
-        import config
-        config.CONF_THRESHOLD = conf
-
     stream_url = pick_source() if source is None else source
     cap = cv2.VideoCapture(stream_url)
     if not cap.isOpened():
         raise RuntimeError(f"Cannot open stream: {stream_url}")
 
-    detector = VehicleDetector()
+    detector = VehicleDetector(conf=conf) if conf else VehicleDetector()
     signal   = TrafficSignal()
 
     t_prev = time.perf_counter()

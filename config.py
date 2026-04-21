@@ -19,3 +19,4 @@ CONF_THRESHOLD = 0.40
 IMGSZ          = 640
 DISPLAY_WIDTH  = 960
 DISPLAY_HEIGHT = 540
+RECONNECT_DELAY_S = 3   # seconds to wait before reconnecting a dropped stream
